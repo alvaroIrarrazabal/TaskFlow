@@ -1,0 +1,142 @@
+
+<h1>TaskFlow</h1>
+
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+
+  <div>
+
+    <label for="title"> Título</label>
+    <input
+    type="text"
+     id="title"
+    formControlName="title"
+    >
+    @if (taskForm.controls.title.touched && taskForm.controls.title.invalid){
+    @if(taskForm.controls.title.hasError('required')){
+    <small>El titulo es obligatorio</small>
+    }
+
+    @if(taskForm.controls.title.hasError('maxlength')){
+    <small>El titulo no puede superar los 120 caracteres.</small>
+    }
+    }
+  </div>
+
+
+
+
+  <div>
+    <label for="description">Descripción</label>
+    <textarea
+     id="title"
+      formControlName="description">
+      </textarea>
+
+  </div>
+
+    @if (editingTaskId !== null) {
+    <div>
+      <label for="status">Estado</label>
+
+      <select id="status" formControlName="status">
+
+        <option value="TODO">Por hacer</option>
+        <option value="IN_PROGRESS">En progreso</option>
+        <option value="DONE">Completada</option>
+
+      </select>
+    </div>
+    }
+
+  <div>
+    <label for="priority">Prioridad</label>
+    <select
+    id="priority"
+    formControlName="priority" >
+
+  <option value="LOW">Baja</option>
+  <option value="MEDIUM">Media</option>
+  <option value="HIGH">Alta</option>
+
+  </select>
+  </div>
+
+
+  <div>
+    <label for="dueDate">Fecha límite</label>
+    <input
+    type="date"
+     id="dueDate"
+      formControlName="dueDate">
+  </div>
+
+  <button type="submit" [disabled]="taskForm.invalid || creating">
+
+    @if (creating) {
+    Guardando...
+    } @else if (editingTaskId !== null) {
+    Guardar cambios
+    } @else {
+    Crear tarea
+    }
+
+  </button>
+
+
+
+
+
+
+</form>
+
+
+
+@if (loading) {
+
+<p>Cargando tareas...</p>
+
+} @else if (errorMessage) {
+
+<p>{{ errorMessage }}</p>
+
+} @else {
+
+<p>Total de tareas: {{ tasks.length }}</p>
+
+@for (task of tasks; track task.id) {
+
+<article>
+  <h2>{{ task.title }}</h2>
+  <p>{{ task.description }}</p>
+  <p>Estado: {{ task.status }}</p>
+  <p>Prioridad: {{ task.priority }}</p>
+  <p>Fecha límite: {{ task.dueDate }}</p>
+</article>
+
+
+
+<button
+type="button"
+(click)="deleteTask(task.id)"
+>
+Eliminar tarea
+
+</button>
+
+<button
+type="button"
+(click)="startEdit(task)">
+Editar
+</button>
+
+} @empty {
+
+<p>No hay tareas registradas.</p>
+
+}
+@if (deleteMessage) {
+<p>{{ deleteMessage }}</p>
+}
+
+
+}
