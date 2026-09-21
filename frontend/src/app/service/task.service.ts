@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreateTaskRequest, Task ,UpdateTaskRequest} from '../models/task.model';
+import { CreateTaskRequest, Task ,TaskPriority,TaskStatus,UpdateTaskRequest} from '../models/task.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -15,9 +15,39 @@ export class TaskService {
 
 
 
-  getTasks(): Observable<Task[]> {
+  getTasks(
+    status?: TaskStatus,
+    priority?: TaskPriority,
+    search?: string,
+    sortBy?: string,
+    direction?: string
+  ): Observable<Task[]> {
 
-    return this.http.get<Task[]>(this.apiUrl);
+
+  let params = new HttpParams();
+
+  if (status) {
+    params = params.set('status', status);
+    }
+
+  if (priority) {
+    params = params.set('priority', priority);
+    }
+
+  if (search && search.trim()) {
+    params = params.set('search', search.trim());
+    }
+
+    if (sortBy) {
+      params = params.set('sortBy', sortBy);
+    }
+    
+    if (direction) {
+      params = params.set('direction',direction)
+    }
+
+  return this.http.get<Task[]>(this.apiUrl, { params });
+
   }
 
 

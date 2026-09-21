@@ -22,9 +22,18 @@
 
 
         @GetMapping
-        public List<TaskResponse> findAll(){
+        public ResponseEntity<List<TaskResponse>> findAll(
+                @RequestParam(required = false) TaskStatus status,
+                @RequestParam(required = false) TaskPriority priority,
+                @RequestParam(required = false) String search,
+                @RequestParam(required = false) String sortBy,
+                @RequestParam(required = false) String direction
+        ) {
 
-            return taskService.findAllTasks();
+
+            return ResponseEntity.ok(
+                    taskService.findAll(status, priority, search,sortBy,direction)
+            );
         }
 
         @GetMapping("/{id}")

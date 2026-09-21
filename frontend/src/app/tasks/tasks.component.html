@@ -82,13 +82,73 @@
 
   </button>
 
-
-
-
-
-
 </form>
 
+
+<div>
+  <label for="search">Buscar tarea:</label>
+  <input
+  type="text"
+   id="search"
+   [formControl]="searchControl"
+   placeholder="Ej: Ir al supermercado"
+   >
+
+   <button
+   type="button"
+   (click)="searchTask()">
+   Buscar
+   </button>
+
+</div>
+
+<div>
+  <label for="bySort">Ordenar por:</label>
+
+  <select name="bySort" (change)="onBySortChange($event)">
+    <option value="dueDate">Fecha límite</option>
+    <option value="priority">Prioridad</option>
+  </select>
+</div>
+
+<div>
+  <label for="direction">Dirección:</label>
+
+  <select  id="direction"
+  (change)="onDirectionChange($event)">
+
+<option value="ASC">Asendente</option>
+<option value="DESC">Desendente</option>
+
+  </select>
+</div>
+
+<div>
+  <label for="statusFilter">Filtrar por estado</label>
+
+  <select name="statusFilter" (change)="onStatusChange($event)">
+
+    <option value="">Todas</option>
+    <option value="TODO">Por hacer</option>
+    <option value="IN_PROGRESS">En progreso</option>
+    <option value="DONE">Terminada</option>
+
+  </select>
+</div>
+
+
+<div>
+  <label for="priorityFilter">Filtrar por prioridad</label>
+
+  <select id="priorityFilter" (change)="onPriorityChange($event)">
+
+    <option value="">Todas</option>
+    <option value="LOW">Baja</option>
+    <option value="MEDIUM">Media</option>
+    <option value="HIGH">Alta</option>
+
+  </select>
+</div>
 
 
 @if (loading) {

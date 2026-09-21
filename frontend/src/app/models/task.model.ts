@@ -1,7 +1,7 @@
-export type TaskStatus = 
+export type TaskStatus =
   'TODO' |
   'IN_PROGRESS' |
-  'DONE';  
+  'DONE';
 
 
 export type TaskPriority =
@@ -32,9 +32,9 @@ export interface CreateTaskRequest{
 }
 
 export interface UpdateTaskRequest {
-  title:string;
-  description:string;
-  status:TaskStatus
-  priorirty:TaskPriority;
-  dueDate:string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: string;
 }
