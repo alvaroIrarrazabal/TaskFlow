@@ -1,202 +1,331 @@
+<div class="min-h-screen bg-slate-100">
+  <header class="border-b border-slate-200 bg-white">
+    <div class="mx-auto max-w-7xl px-6 py-5">
+      <h1 class="text-2xl font-bold text-slate-900">TaskFlow</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Organiza y administra tus tareas.
+      </p>
+    </div>
+  </header>
 
-<h1>TaskFlow</h1>
+  <main class="mx-auto max-w-7xl px-6 py-8">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-[360px_1fr]">
 
-<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <section class="rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-5 text-lg font-semibold text-slate-900">
+          @if (editingTaskId !== null) {
+          Editar tarea
+          } @else {
+          Nueva tarea
+          }
+        </h2>
+        <form class="space-y-5" [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+          <div>
+            <label
+            for="title"
+            class="mb-1 block text-sm font-medium text-slate-700"
+            > Título</label>
+            <input
+            type="text"
+             id="title"
+              formControlName="title"
+               class="w-full rounded-lg border border-slate-300 px-3 py-2
+               focus:border-blue-500 focus:outline-none
+               focus:ring-2 focus:ring-blue-500/20"
+                />
+            @if (
+            taskForm.controls.title.touched && taskForm.controls.title.invalid
+            ) {
+            @if (taskForm.controls.title.hasError("required")) {
+            <small>El titulo es obligatorio</small>
+            }
+
+            @if (taskForm.controls.title.hasError("maxlength")) {
+            <small>El titulo no puede superar los 120 caracteres.</small>
+            }
+            }
+          </div>
+
+          <div>
+            <label for="description"
+            class="mb-1 block text-sm font-medium text-slate-700"
+            >Descripción</label>
+            <textarea
+             id="description"
+             formControlName="description"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2
+            focus:border-blue-500 focus:outline-none
+            focus:ring-2 focus:ring-blue-500/20"
+             >
+            </textarea>
+          </div>
+
+          @if (editingTaskId !== null) {
+          <div>
+            <label for="status"
+            class="mb-1 block text-sm font-medium text-slate-700"
+            >Estado</label>
+
+            <select id="status" formControlName="status"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2
+            focus:border-blue-600 focus:outline-none
+            focus:ring-2 focus:ring-blue-600/20">
+              <option value="TODO">Por hacer</option>
+              <option value="IN_PROGRESS">En progreso</option>
+              <option value="DONE">Completada</option>
+            </select>
+          </div>
+          }
+
+          <div>
+            <label for="priority"
+            class="mb-1 block text-sm font-medium text-slate-700"
+            >Prioridad</label>
+            <select
+             id="priority"
+              formControlName="priority"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2
+              focus:border-blue-500 focus:outline-none
+              focus:ring-2 focus:ring-blue-600/20"
+              >
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="dueDate"
+            class="mb-1 block text-sm font-medium text-slate-700">Fecha límite</label>
+            <input
+             type="date"
+             id="dueDate"
+             formControlName="dueDate"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2
+              focus:border-blue-500 focus:outline-none
+              focus:ring-2 focus:ring-blue-500/20"/>
+          </div>
+
+          <button type="submit" [disabled]="taskForm.invalid || creating"
+          class="
+          w-full rounded-lg
+           bg-blue-600
+            px-4 py-2
+            font-medium
+             text-white
+             transition-colors
+             hover:bg-blue-800
+             disabled:cursor-not-allowed disabled:opacity-50
+             "
+          >
+            @if (creating) {
+            Guardando...
+            } @else if (editingTaskId !== null) {
+            Guardar cambios
+            } @else {
+            Crear tarea
+            }
+          </button>
+          @if (editingTaskId !== null) {
+          <button type="button" (click)="cancelEdit()" class="w-full rounded-lg border border-slate-300 px-4 py-2
+           font-medium text-slate-700 transition-colors
+           hover:bg-slate-100">
+            Cancelar edición
+          </button>
+          }
+
+          @if (createMessage) {
+          <p class="rounded-lg border border-green-200 bg-green-50 px-3 py-2
+           text-sm text-green-700">
+            {{ createMessage }}
+          </p>
+          }
+
+          @if (createError) {
+  <p
+    class="rounded-lg border border-red-200 bg-red-50 px-3 py-2
+           text-sm text-red-700"
+  >
+    {{ createError }}
+  </p>
+}
+
+        </form>
+
+      </section>
+
+      <section class="rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-5 text-lg font-semibold text-slate-900">
+          Mis tareas
+        </h2>
+
+        <div class="space-y-5">
+
+          
+          
+          <label for="search"
+          class="mb-1 block text-sm font-medium text-slate-700">Buscar tarea:</label>
+          <div class="flex gap-2">
+
+        <input class="w-full rounded-lg border border-slate-300 px-3 py-2
+      focus:border-blue-500 focus:outline-none
+       focus:ring-2 focus:ring-blue-500/20" type="text" id="search" [formControl]="searchControl"
+            placeholder="Ej: Ir al supermercado" />
+
+          <button class="w-full rounded-lg bg-blue-600 px-4 px-2 font-medium text-white
+          transition-colors hover:bg-blue-700" type="button" (click)="searchTask()"
+          >Buscar</button>
+        </div>
+
+<div class="grid grid-cols-2 gap-4 mt-4">
 
   <div>
+    <label for="bySort" class="mb-1 block text-sm font-medium text-slate-700">Ordenar por:</label>
 
-    <label for="title"> Título</label>
-    <input
-    type="text"
-     id="title"
-    formControlName="title"
-    >
-    @if (taskForm.controls.title.touched && taskForm.controls.title.invalid){
-    @if(taskForm.controls.title.hasError('required')){
-    <small>El titulo es obligatorio</small>
-    }
+    <select class="w-full rounded-lg border border-slate-300 px-3 py-2
+    focus:border-blue-500 focus:outline-none
+    focus:ring-2 focus:ring-blue-500/20"
 
-    @if(taskForm.controls.title.hasError('maxlength')){
-    <small>El titulo no puede superar los 120 caracteres.</small>
-    }
-    }
+     id="bySort" (change)="onBySortChange($event)">
+      <option value="dueDate">Fecha límite</option>
+      <option value="priority">Prioridad</option>
+    </select>
   </div>
 
+  <div>
+    <label for="direction" class=" mb-1 block text-sm font-medium text-slate-700">Dirección:</label>
 
+    <select class="w-full rounded-lg border border-slate-300 px-3 py-2
+    focus:border-blue-500 focus:outline-none
+    focus:ring-2 focus:ring-blue-500/20"
+
+    id="direction" (change)="onDirectionChange($event)">
+      <option value="ASC">Ascendente</option>
+      <option value="DESC">Descendente</option>
+    </select>
+  </div>
+</div>
+<div class="grid grid-cols-2 gap-4">
 
 
   <div>
-    <label for="description">Descripción</label>
-    <textarea
-     id="title"
-      formControlName="description">
-      </textarea>
+    <label for="statusFilter" class=" mb-1 block text-sm font-medium text-slate-700">Filtrar por estado</label>
 
+    <select class="w-full rounded-lg border border-slate-300 px-4 py-2
+    focus:border-blue-500 focus:outline-none
+    focus:ring-2 focus:ring-blue-500/20"
+     id="statusFilter" (change)="onStatusChange($event)">
+      <option value="">Todas</option>
+      <option value="TODO">Por hacer</option>
+      <option value="IN_PROGRESS">En progreso</option>
+      <option value="DONE">Terminada</option>
+    </select>
   </div>
 
-    @if (editingTaskId !== null) {
-    <div>
-      <label for="status">Estado</label>
+  <div>
+    <label for="priorityFilter" class=" mb-1 block text-sm font-medium text-slate-700">Filtrar por
+      prioridad</label>
 
-      <select id="status" formControlName="status">
-
-        <option value="TODO">Por hacer</option>
-        <option value="IN_PROGRESS">En progreso</option>
-        <option value="DONE">Completada</option>
-
+      <select class="w-full rounded-lg border border-blue-500 px-4 py-2
+      focus:border-blue-500 focus:outline-none
+      focus:ring-2 focus:ring-blue-500/20"
+       id="priorityFilter" (change)="onPriorityChange($event)">
+        <option value="">Todas</option>
+        <option value="LOW">Baja</option>
+        <option value="MEDIUM">Media</option>
+        <option value="HIGH">Alta</option>
       </select>
     </div>
-    }
-
-  <div>
-    <label for="priority">Prioridad</label>
-    <select
-    id="priority"
-    formControlName="priority" >
-
-  <option value="LOW">Baja</option>
-  <option value="MEDIUM">Media</option>
-  <option value="HIGH">Alta</option>
-
-  </select>
   </div>
+</div>
 
+<div class="mt-8 border-t border-slate-200 pt-6">
+  
+  
+  @if (loading) {
+        <p>Cargando tareas...</p>
+      } @else if (errorMessage) {
+        <p>{{ errorMessage }}</p>
+        } @else {
 
-  <div>
-    <label for="dueDate">Fecha límite</label>
-    <input
-    type="date"
-     id="dueDate"
-      formControlName="dueDate">
+       <p class="mb-4 text-sm text-slate-500">
+         Total de tareas:
+         <span class="font-semibold text-slate-900">
+           {{ tasks.length }}
+         </span>
+       </p>
+
+        <div class="space-y-4 mt-4">
+
+          
+          @for (task of tasks; track task.id) {
+        <article class="rounded-xl border border-slate-200 p-4">
+          <h3 class="text-lg font-semibold text-slate-900">{{ task.title }}</h3>
+          <p class="mt-1 text-sm text-slate-600">{{ task.description }}</p>
+
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+
+            Estado: <span
+            class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium "
+            [ngClass]="{
+              'bg-yellow-100 text-yellow-700':task.status === 'TODO',
+              'bg-blue-100 text-blue-700':task.status === 'IN_PROGRESS',
+              'bg-green-100 text-green-700':task.status === 'DONE'
+            }"
+            >
+            {{ task.status }}
+
+            </span>
+            Prioridad:<span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium "
+          [ngClass]="{
+            'bg-red-100 text-red-700':task.priority ==='HIGH',
+            'bg-yellow-100 text-yellow-700':task.priority ==='MEDIUM',
+            'bg-green-100 text-green-700':task.priority ==='LOW'
+          }">
+
+            {{ task.priority }}
+
+          </span>
+          
+          </div>
+
+          <p class="mt-3 text-sm text-slate-500">
+             <span class="font-medium text-slate-700">Fecha límite: </span>
+             
+             {{ task.dueDate | date:'dd/MM/yyyy' }}
+
+            </p>
+
+          <div class="mt-4 flex gap-2">
+
+            <button type="button" (click)="deleteTask(task.id)"
+            class="rounded-lg border-slate-300 px-3 py-2 text-sm font-medium
+            text-slate-700 transition-colors hover:bg-slate-100">
+              Eliminar tarea
+            </button>
+            
+            <button type="button" (click)="startEdit(task)"
+            class=" rounded-lg border-red-300 px-3 py-2 text-sm font-medium
+            text-red-700 transition-colors hover:bg-red-100">
+              Editar
+            </button>
+          </div>
+
+        </article>
+
+      } @empty {
+        <p>No hay tareas registradas.</p>
+      }
+    </div>
+        @if (deleteMessage) {
+        <p>{{ deleteMessage }}</p>
+        }
+        }
+        
+      </div>
+    </section>
   </div>
-
-  <button type="submit" [disabled]="taskForm.invalid || creating">
-
-    @if (creating) {
-    Guardando...
-    } @else if (editingTaskId !== null) {
-    Guardar cambios
-    } @else {
-    Crear tarea
-    }
-
-  </button>
-
-</form>
-
-
-<div>
-  <label for="search">Buscar tarea:</label>
-  <input
-  type="text"
-   id="search"
-   [formControl]="searchControl"
-   placeholder="Ej: Ir al supermercado"
-   >
-
-   <button
-   type="button"
-   (click)="searchTask()">
-   Buscar
-   </button>
-
+</main>
 </div>
-
-<div>
-  <label for="bySort">Ordenar por:</label>
-
-  <select name="bySort" (change)="onBySortChange($event)">
-    <option value="dueDate">Fecha límite</option>
-    <option value="priority">Prioridad</option>
-  </select>
-</div>
-
-<div>
-  <label for="direction">Dirección:</label>
-
-  <select  id="direction"
-  (change)="onDirectionChange($event)">
-
-<option value="ASC">Asendente</option>
-<option value="DESC">Desendente</option>
-
-  </select>
-</div>
-
-<div>
-  <label for="statusFilter">Filtrar por estado</label>
-
-  <select name="statusFilter" (change)="onStatusChange($event)">
-
-    <option value="">Todas</option>
-    <option value="TODO">Por hacer</option>
-    <option value="IN_PROGRESS">En progreso</option>
-    <option value="DONE">Terminada</option>
-
-  </select>
-</div>
-
-
-<div>
-  <label for="priorityFilter">Filtrar por prioridad</label>
-
-  <select id="priorityFilter" (change)="onPriorityChange($event)">
-
-    <option value="">Todas</option>
-    <option value="LOW">Baja</option>
-    <option value="MEDIUM">Media</option>
-    <option value="HIGH">Alta</option>
-
-  </select>
-</div>
-
-
-@if (loading) {
-
-<p>Cargando tareas...</p>
-
-} @else if (errorMessage) {
-
-<p>{{ errorMessage }}</p>
-
-} @else {
-
-<p>Total de tareas: {{ tasks.length }}</p>
-
-@for (task of tasks; track task.id) {
-
-<article>
-  <h2>{{ task.title }}</h2>
-  <p>{{ task.description }}</p>
-  <p>Estado: {{ task.status }}</p>
-  <p>Prioridad: {{ task.priority }}</p>
-  <p>Fecha límite: {{ task.dueDate }}</p>
-</article>
-
-
-
-<button
-type="button"
-(click)="deleteTask(task.id)"
->
-Eliminar tarea
-
-</button>
-
-<button
-type="button"
-(click)="startEdit(task)">
-Editar
-</button>
-
-} @empty {
-
-<p>No hay tareas registradas.</p>
-
-}
-@if (deleteMessage) {
-<p>{{ deleteMessage }}</p>
-}
-
-
-}

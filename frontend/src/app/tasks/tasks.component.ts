@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { NgClass, DatePipe } from '@angular/common';
 import {
   CreateTaskRequest,
   Task,
@@ -12,7 +13,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, NgClass, DatePipe],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css',
 })
@@ -45,11 +46,12 @@ export class TasksComponent implements OnInit {
       Validators.maxLength(120),
     ]),
     description: this.formBuilder.nonNullable.control('', [
+      Validators.required,
       Validators.maxLength(1000),
     ]),
     status: this.formBuilder.nonNullable.control<TaskStatus>('TODO'),
     priority: this.formBuilder.nonNullable.control<TaskPriority>('MEDIUM'),
-    dueDate: this.formBuilder.nonNullable.control(''),
+    dueDate: this.formBuilder.nonNullable.control('', [Validators.required]),
   });
 
   //crearTarea
@@ -68,6 +70,13 @@ export class TasksComponent implements OnInit {
   //eliminar tarea
 
   deleteTask(id: number): void {
+      const confirmed = confirm(
+        '¿Estás seguro de que deseas eliminar esta tarea?',
+      );
+
+      if (!confirmed) {
+        return;
+      }
     this.deleteMessage = '';
     this.errorMessage = '';
     this.createError = '';
@@ -100,6 +109,11 @@ export class TasksComponent implements OnInit {
       priority: task.priority,
       dueDate: task.dueDate,
     });
+
+     document.getElementById('task-form')?.scrollIntoView({
+       behavior: 'smooth',
+       block: 'start',
+     });
   }
 
   //actualizar tarea
@@ -139,7 +153,7 @@ export class TasksComponent implements OnInit {
           dueDate: '',
         });
 
-        this.createMessage = 'Tarea actualizada correctamente';
+        this.createError = 'Tarea actualizada correctamente';
         this.creating = false;
 
         setTimeout(() => {
@@ -190,8 +204,8 @@ export class TasksComponent implements OnInit {
       error: (error) => {
         console.error('Error creating task:', error);
 
-        this.createMessage = 'No se pudo crear la tarea';
-        (this, (this.creating = false));
+        this.createError = 'No se pudo crear la tarea';
+        this.creating = false;
       },
     });
   }
@@ -265,17 +279,27 @@ export class TasksComponent implements OnInit {
     this.loadTasks();
   }
 
-  onBySortChange(event:Event): void{
-
+  onBySortChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedSortBy = select.value;
     this.loadTasks();
-
   }
 
-  onDirectionChange(event: Event): void{
+  onDirectionChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedDirection = select.value;
     this.loadTasks();
+  }
+
+  cancelEdit(): void {
+    this.editingTaskId = null;
+
+    this.taskForm.reset({
+      title: '',
+      description: '',
+      status: 'TODO',
+      priority: 'MEDIUM',
+      dueDate: '',
+    });
   }
 }
