@@ -153,18 +153,23 @@ export class TasksComponent implements OnInit {
           dueDate: '',
         });
 
-        this.createError = 'Tarea actualizada correctamente';
-        this.creating = false;
-
+        this.createMessage = 'Tarea actualizada correctamente';
+        
         setTimeout(() => {
           this.createMessage = '';
         }, 3000);
+        this.creating = false;
       },
 
       error: (error) => {
         console.error('Error upading');
 
-        this.createMessage = 'No se pudo actualizar la tarea';
+        this.createError = 'No se pudo actualizar la tarea';
+        
+        setTimeout(() => {
+          this.createError = '';
+        }, 3000);
+
         this.creating = false;
       },
     });
@@ -198,6 +203,9 @@ export class TasksComponent implements OnInit {
         });
 
         this.createMessage = 'tarea creada correctamente';
+        setTimeout(() => {
+          this.createMessage = '';
+        }, 3000);
         this.creating = false;
       },
 
@@ -205,6 +213,9 @@ export class TasksComponent implements OnInit {
         console.error('Error creating task:', error);
 
         this.createError = 'No se pudo crear la tarea';
+        setTimeout(() => {
+          this.createError = '';
+        }, 3000);
         this.creating = false;
       },
     });
