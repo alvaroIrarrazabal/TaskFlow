@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreateTaskRequest, Task ,TaskPriority,TaskStatus,UpdateTaskRequest} from '../models/task.model';
@@ -9,7 +10,7 @@ import { Observable } from 'rxjs';
 export class TaskService {
 
 
-  private readonly apiUrl = 'http://localhost:8081/api/tasks';
+  private readonly apiUrl = `${environment.apiUrl}/api/tasks`;
 
   constructor(private http: HttpClient) { }
 
@@ -41,7 +42,7 @@ export class TaskService {
     if (sortBy) {
       params = params.set('sortBy', sortBy);
     }
-    
+
     if (direction) {
       params = params.set('direction',direction)
     }
