@@ -7,7 +7,10 @@
 
     import java.util.List;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = {
+            "http://localhost:4200",
+            "https://taskflow-web-w9n3.onrender.com"
+    })
     @RestController
     @RequestMapping("/api/tasks")
     public class TaskController {
